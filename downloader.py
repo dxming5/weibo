@@ -14,7 +14,7 @@ def save_single_url(url, file_name):
     while True:
         util.time_interval("download")
         if i > MAX_RETRY:
-            print("\n    -->当前url({})下载异常次数超过{}次，跳过！".format(url, MAX_RETRY))
+            util.print_message("    -->当前url({})下载异常次数超过{}次，跳过！".format(url, MAX_RETRY))
             return False
         try:
             # 下载超时设置，防止线程堵塞
@@ -35,9 +35,10 @@ def download_by_type(all_url_dict, blogger_url_txt_dir, blogger_dir, kind):
         for create_time, url_mblog in all_url_dict.items():
             for index in range(0, len(url_mblog)):
                 url = url_mblog[index]
-                print('\r [{}已下载进度：{}%({}/{})] 开始下载<{}>时刻第{}{}{}'.format(
-                    kind, int(download_mblog_num / all_mblog_num * 100), download_mblog_num,
-                    all_mblog_num, create_time, index + 1, classifier, kind), end='')
+                util.print_progress('开始下载<{}>时刻第{}{}{} [{}已下载进度：{}%({}/{})]'.format(
+                    create_time, index + 1, classifier, kind, kind,
+                    int(download_mblog_num / all_mblog_num * 100), download_mblog_num,
+                    all_mblog_num))
                 file_name = ''
                 if kind == '图片':
                     file_name = os.path.join(blogger_dir, create_time + ' - ' + str(index + 1) + '.jpg')
@@ -52,9 +53,8 @@ def download_by_type(all_url_dict, blogger_url_txt_dir, blogger_dir, kind):
                     saved_url_list.append(url)
                     storage.append_line(blogger_url_txt_dir, url)
             download_mblog_num += 1
-            print('\r [{}已下载进度：{}%({}/{})]'.format(kind, int(download_mblog_num / all_mblog_num * 100),
-                                                          download_mblog_num, all_mblog_num), end='')
-        print()
+        util.print_progress('[{}已下载完成]'.format(kind), end='\n')
+       
 
 
 def download(blogger_name, blogger_url):

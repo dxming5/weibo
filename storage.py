@@ -28,7 +28,9 @@ def rm_dir(path):
 
 
 def read_lines(path):
-    """按行读取，返回去除换行符的非空行列表"""
+    """按行读取，返回去除换行符的非空行列表；文件不存在则返回空列表"""
+    if not os.path.exists(path):
+        return []
     lines = []
     with open(path, mode='r', encoding='utf-8') as f:
         for line in f:

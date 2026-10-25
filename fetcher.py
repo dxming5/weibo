@@ -24,7 +24,7 @@ def get_all_url(blogger_url):
     all_live_url_dict = dict()
     all_video_url_dict = dict()
     since_id = '0'
-    for page in range(1, 1000):
+    for page in range(1, 10000):
         num = MAX_RETRY
         for i in range(0, num + 1):
             util.time_interval("get_page")
@@ -32,14 +32,13 @@ def get_all_url(blogger_url):
                 print("\n    -->当前博主({})获取异常次数超过{}次，跳过该博主！".format(blogger_url, num))
                 return all_picture_url_dict, all_live_url_dict, all_video_url_dict
             if BLOGGER_MAX_NUM != 0 and BLOGGER_MAX_NUM < len(all_picture_url_dict):
-                print('\r [已获取图片微博：%d条；live微博：%d条；视频微博：%d条]' % (
-                    len(all_picture_url_dict), len(all_live_url_dict), len(all_video_url_dict)))
-                print()
+                util.print_progress('已达到最大条数 [已获取图片微博：%d条；live微博：%d条；视频微博：%d条]' % (
+                    len(all_picture_url_dict), len(all_live_url_dict), len(all_video_url_dict)), end='\n')
                 return all_picture_url_dict, all_live_url_dict, all_video_url_dict
             try:
                 real_url = blogger_url + "&since_id=" + since_id
-                print('\r [已获取图片微博：%d条；live微博：%d条；视频微博：%d条] 开始获取第%d页' % (
-                    len(all_picture_url_dict), len(all_live_url_dict), len(all_video_url_dict), page), end='')
+                util.print_progress('开始获取第%d页 [已获取图片微博：%d条；live微博：%d条；视频微博：%d条]' % (
+                    page, len(all_picture_url_dict), len(all_live_url_dict), len(all_video_url_dict)))
                 req = request.Request(url=real_url, headers=header)
                 resp = request.urlopen(req, context=context).read().decode()
                 resp_json = json.loads(resp)
@@ -90,14 +89,12 @@ def get_all_url(blogger_url):
 
                 # 若当页 json 中无 since_id，表示已无下一页
                 if 'cardlistInfo' not in resp_json['data'] or 'since_id' not in resp_json['data']['cardlistInfo']:
-                    print('\r [已获取图片微博：%d条；live微博：%d条；视频微博：%d条]' % (
-                        len(all_picture_url_dict), len(all_live_url_dict), len(all_video_url_dict)))
-                    print()
+                    util.print_progress('获取完成 [已获取图片微博：%d条；live微博：%d条；视频微博：%d条]' % (
+                        len(all_picture_url_dict), len(all_live_url_dict), len(all_video_url_dict)), end='\n')
                     return all_picture_url_dict, all_live_url_dict, all_video_url_dict
                 since_id = str(resp_json['data']['cardlistInfo']['since_id'])
                 break
             except Exception as error:
-                print('\n     error: ', end='')
-                print(error)
-                print('     -->异常导致重新获取第' + str(page) + '页的URL')
+                util.print_message('     error: ' + str(error)
+                                  + '\n     -->异常导致重新获取第' + str(page) + '页的URL')
     return all_picture_url_dict, all_live_url_dict, all_video_url_dict
