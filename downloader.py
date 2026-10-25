@@ -30,13 +30,14 @@ def download_by_type(all_url_dict, blogger_url_txt_dir, blogger_dir, kind):
     saved_url_list = storage.read_lines(blogger_url_txt_dir)
     all_mblog_num = len(all_url_dict)
     if all_mblog_num:
+        classifier = '张' if kind == '图片' else '条'
         download_mblog_num = 0
         for create_time, url_mblog in all_url_dict.items():
             for index in range(0, len(url_mblog)):
                 url = url_mblog[index]
-                print('\r [{}已下载进度：{}%({}/{})] 开始下载<{}>时刻第{}张(条){}：{}'.format(
+                print('\r [{}已下载进度：{}%({}/{})] 开始下载<{}>时刻第{}{}{}'.format(
                     kind, int(download_mblog_num / all_mblog_num * 100), download_mblog_num,
-                    all_mblog_num, create_time, index + 1, kind, url), end='')
+                    all_mblog_num, create_time, index + 1, classifier, kind), end='')
                 file_name = ''
                 if kind == '图片':
                     file_name = os.path.join(blogger_dir, create_time + ' - ' + str(index + 1) + '.jpg')
